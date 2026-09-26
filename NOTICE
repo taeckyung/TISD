@@ -1,0 +1,51 @@
+TISD: On-Policy Self-Distillation with Trajectory Intervention
+
+This product is derived from the following projects, both licensed under the Apache License,
+Version 2.0 (see LICENSE):
+
+  * SDPO (Reinforcement Learning via Self-Distillation), https://github.com/lasgroup/SDPO
+  * verl (Volcano Engine Reinforcement Learning for LLMs), https://github.com/volcengine/verl
+    Copyright 2024 Bytedance Ltd. and/or its affiliates
+
+The datasets/sciknoweval/ splits are redistributed unchanged from SDPO. SciKnowEval
+(https://huggingface.co/datasets/hicai-zju/SciKnowEval) and LiveCodeBench
+(https://huggingface.co/datasets/livecodebench/code_generation_lite) are subject to their own licenses.
+
+Changes relative to SDPO
+------------------------
+Unused upstream components (documentation, examples, Docker files, tests, auxiliary scripts,
+unused experimental modules, and datasets not used by this project) were removed.
+
+The following files were added:
+  experiments/common.sh
+  experiments/lcb/{tisd,sdpo,trd,grpo}.sh
+  experiments/science/{tisd,sdpo,trd,grpo}.sh
+  requirements.in
+  setup_uv_env.sh
+  verl/experimental/agent_loop/branch_continuation_agent_loop.py
+  verl/trainer/config/tisd.yaml
+  verl/trainer/config/trd.yaml
+  verl/trainer/ppo/trd_utils.py
+  verl/utils/checkpoint/retention.py
+
+The following files were modified:
+  .gitignore, README.md, pyproject.toml, requirements.txt, setup.py
+  data/README.md, data/format/code.py, data/load_dataset.py, data/preprocess.py,
+  data/split_tests.py, data/utils/livecodebench.py
+  training/verl_training.sh
+  verl/experimental/agent_loop/__init__.py
+  verl/single_controller/ray/base.py
+  verl/trainer/config/_generated_ppo_megatron_trainer.yaml
+  verl/trainer/config/_generated_ppo_trainer.yaml
+  verl/trainer/config/actor/actor.yaml
+  verl/trainer/config/ppo_trainer.yaml
+  verl/trainer/config/user.yaml
+  verl/trainer/constants_ppo.py
+  verl/trainer/main_ppo.py
+  verl/trainer/ppo/core_algos.py
+  verl/trainer/ppo/metric_utils.py
+  verl/trainer/ppo/ray_trainer.py
+  verl/utils/tracking.py
+  verl/workers/actor/dp_actor.py
+  verl/workers/config/actor.py
+  verl/workers/fsdp_workers.py

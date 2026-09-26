@@ -1,0 +1,29 @@
+defaults:
+  - sdpo
+  - _self_
+
+# Trajectory-Refined Distillation (TRD) on the SDPO science pipeline.
+# The SDPO EMA teacher rewrites each student rollout using a successful sibling as
+# its reference solution. Training then applies dense full-vocabulary forward KL
+# along the refined trajectory. All unspecified settings inherit from sdpo.yaml.
+
+# TEMPLATE_LENGTH=512, MAX_PROMPT_LENGTH=2048, and MAX_RESPONSE_LENGTH=8192.
+# TRD's teacher prompt contains the problem plus two complete responses, and the
+# model context must additionally leave room for one complete refined response.
+max_model_len: 27136
+
+actor_rollout_ref:
+  actor:
+    policy_loss:
+      loss_mode: trd
+    self_distillation:
+      full_logit_distillation: True
+      distillation_topk: null
+      distillation_add_tail: False
+      alpha: 0.0
+      teacher_regularization: ema
+      include_environment_feedback: False
+      max_reprompt_len: 18944
+
+trainer:
+  val_before_train: False

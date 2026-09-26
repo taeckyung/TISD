@@ -1,0 +1,57 @@
+defaults:
+  - sdpo
+  - _self_
+
+# Trajectory-Intervention Self-Distillation (TISD), policy_loss.loss_mode=tisd.
+#
+# For every failed rollout with a privileged teacher context (a successful sibling, otherwise
+# environment feedback), TISD
+#   1. scores each response position by the student / EMA-teacher divergence (branch_alpha),
+#   2. picks the branch position t* (branch_selection, default: peak divergence),
+#   3. forces the teacher's argmax token at t* (branch_token_source) and lets the student regenerate
+#      the suffix from the plain prompt,
+#   4. distills the retained trajectories toward the privileged-context teacher with the SDPO
+#      objective (alpha, distillation_topk, is_clip), including the forced token.
+# Successful rollouts are retained unchanged. Rows without a privileged teacher are not distilled.
+#
+# The defaults below are the LiveCodeBench setting of the paper (Table 11). The experiment launchers
+# in experiments/ override the setting-specific values (e.g. forward KL and top-100 for SciKnowEval).
+
+actor_rollout_ref:
+  actor:
+    policy_loss:
+      loss_mode: tisd
+    self_distillation:
+      full_logit_distillation: True
+      distillation_topk: 20
+      distillation_add_tail: True
+      # Learning divergence: 0.0=forward KL, 1.0=reverse KL, in-between=generalized JSD.
+      alpha: 1.0
+      success_reward_threshold: 0.5
+      # EMA teacher: scores and forces the branch token and provides the distillation targets.
+      teacher_regularization: ema
+      teacher_update_rate: 0.01
+      # Teacher prompt budget. Lower than SDPO's 10240 to leave room for the regenerated suffix:
+      # teacher prompt + prefix + continuation must fit max_model_len (18944).
+      max_reprompt_len: 8192
+      reprompt_truncation: right
+      dont_reprompt_on_self_success: True
+      remove_thinking_from_demonstration: True
+      include_environment_feedback: True
+      environment_feedback_only_without_solution: True
+      is_clip: 2.0
+      # ----- TISD branch selection -----
+      # Branch-selection divergence, independent from alpha: 0.0=forward KL, 1.0=reverse KL.
+      branch_alpha: 1.0
+      # argmax: peak-divergence position (paper default); first_divergence: first position where the
+      # teacher and student top-1 tokens differ; random: uniformly random response position.
+      branch_selection: argmax
+      # teacher: force the teacher argmax token (paper default); student: keep the original sampled
+      # token and only resample the suffix ("student own token" ablation).
+      branch_token_source: teacher
+      # Total branch-regenerate rounds per failed rollout (1 = standard TISD; 2 or 3 for the
+      # regeneration-depth ablation). Later rounds branch strictly after the previous position.
+      regeneration_rounds: 1
+
+trainer:
+  val_before_train: False

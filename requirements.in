@@ -1,0 +1,25 @@
+# Top-level requirements. requirements.txt is the locked set compiled from this file for
+# Python 3.12 on x86_64 Linux with CUDA 12 (see setup_uv_env.sh).
+torch==2.9.0
+torchvision==0.24.0
+torchaudio==2.9.0
+vllm==0.12.0
+transformers==4.56.1
+ray[default]==2.53.0
+tensordict==0.10.0
+torchdata==0.11.0
+datasets==4.4.2
+math-verify==0.8.0
+liger-kernel==0.8.0
+wandb==0.23.1
+accelerate
+codetiming
+dill
+hydra-core
+pandas
+peft
+pyarrow>=19.0.0
+pybind11
+pylatexenc
+tensorboard
+flash-attn @ https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl
